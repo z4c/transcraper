@@ -1,15 +1,24 @@
-
 import requests
 import re
+from lxml import html
+from dateutil import parser as dt_parser
 
 
 base_url = 'https://www.transavia.com'
-session = requests.session()
 user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0) Gecko/20100101 Firefox/68.0'
 languages = 'fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3'
+__session__ = None
 
 
-def main():
+def get_session():
+
+    global __session__
+
+    if __session__:
+        return __session__
+
+    session = requests.session()
+
     dnt_portal = session.get(
         base_url + '/fr-FR/reservez-un-vol/vols/rechercher/',
         headers={
@@ -92,6 +101,76 @@ def main():
                 '"8":"Courier"'
              '}}'
     })
+
+    __session__ = session
+    return session
+
+
+
+def main():
+    session = get_session()
+
+    response = session.post(
+        base_url + "/fr-FR/reservez-un-vol/vols/multidayavailability/",
+        headers={
+            'Accept': '*/*',
+            'Accept-Language': languages,
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'DNT': '1',
+            'Pragma': 'no-cache',
+            'Referer': 'https://www.transavia.com/fr-FR/reservez-un-vol/vols/rechercher/',
+            'TE': 'Trailers',
+            'User-Agent': user_agent,
+            # 'X-Distil-Ajax': ajax_header,
+            'X-Requested-With': 'XMLHttpRequest',
+            'cache-control': 'no-cache',
+        },
+        data={
+            'selectPassengersCount.AdultCount': '1',
+            'selectPassengersCount.ChildCount': '0',
+            'selectPassengersCount.InfantCount': '0',
+            'routeSelection.DepartureStation': 'ORY',
+            'routeSelection.ArrivalStation': 'AMS',
+            'dateSelection.OutboundDate.Day': '18',
+            'dateSelection.OutboundDate.Month': '8',
+            'dateSelection.OutboundDate.Year': '2019',
+            'dateSelection.InboundDate.Day': '25',
+            'dateSelection.InboundDate.Month': '8',
+            'dateSelection.InboundDate.Year': '2019',
+            'dateSelection.IsReturnFlight': 'true',
+            'flyingBlueSearch.FlyingBlueSearch': 'false'
+        }
+    )
+
+    json_content = response.json()
+    inbound = json_content.get('multiDayAvailabilityInbound')
+    outbound = json_content.get('multiDayAvailabilityOutbound')
+
+    if not inbound or not outbound:
+        raise Exception('Whopsey !')
+
+    inbound = html.fromstring(inbound)
+    in_availabilities = [
+        (
+            dt_parser.parse(div.attrib['data-date']),
+            div.find('.//span[@class="price"]').text_content().strip().split("\n")[1].strip()
+        ) for div in inbound.findall(
+            ".//ol/li/div[@class='day day-with-availability']"
+        )
+    ]
+    outbound = html.fromstring(outbound)
+    out_availabilities = [
+        (
+            dt_parser.parse(div.attrib['data-date']),
+            div.find('.//span[@class="price"]').text_content().strip().split("\n")[1].strip()
+        ) for div in inbound.findall(
+            ".//ol/li/div[@class='day day-with-availability']"
+        )
+    ]
+
+    print(in_availabilities, "->", out_availabilities)
 
 
 if __name__ == '__main__':
