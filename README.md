@@ -11,12 +11,12 @@ python3 -mvenv . && source bin/activate
 
 Install required packages
 ```bash
-pip install requests lxml python-dateutil
+pip install requests lxml python-dateutil click
 ```
 
 ## Usage 
 Run it 
 ```bash
-python ./main.py
+python ./main.py --frm AIRPORT_CODE --to AIRPORT_CODE
 ```
 
