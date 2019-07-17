@@ -11,7 +11,7 @@ python3 -mvenv . && source bin/activate
 
 Install required packages
 ```bash
-pip install requests python-dateutil
+pip install requests lxml python-dateutil
 ```
 
 ## Usage 
