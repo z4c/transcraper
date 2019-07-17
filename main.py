@@ -2,6 +2,7 @@ import requests
 import re
 from lxml import html
 from dateutil import parser as dt_parser
+import click
 
 
 base_url = 'https://www.transavia.com'
@@ -106,8 +107,10 @@ def get_session():
     return session
 
 
-
-def main():
+@click.command()
+@click.option('--frm', default='ORY', help='Departure: airport code')
+@click.option('--to', default='AMS', help='Arrival: airport code')
+def scrape(frm, to):
     session = get_session()
 
     response = session.post(
@@ -131,8 +134,8 @@ def main():
             'selectPassengersCount.AdultCount': '1',
             'selectPassengersCount.ChildCount': '0',
             'selectPassengersCount.InfantCount': '0',
-            'routeSelection.DepartureStation': 'ORY',
-            'routeSelection.ArrivalStation': 'AMS',
+            'routeSelection.DepartureStation': frm,
+            'routeSelection.ArrivalStation': to,
             'dateSelection.OutboundDate.Day': '18',
             'dateSelection.OutboundDate.Month': '8',
             'dateSelection.OutboundDate.Year': '2019',
@@ -174,4 +177,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    scrape()
