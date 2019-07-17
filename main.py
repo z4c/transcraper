@@ -173,7 +173,22 @@ def scrape(frm, to):
         )
     ]
 
-    print(in_availabilities, "->", out_availabilities)
+    print(
+        "From %s:" % frm,
+        ",".join([
+            "%s (%s)" % (
+                d.date(),
+                p
+            ) for (d, p) in in_availabilities
+        ]),
+        "\nTo %s" % to,
+        ",".join([
+            "%s (%s)" % (
+                d.date(),
+                p
+            ) for (d, p) in out_availabilities
+        ]),
+    )
 
 
 if __name__ == '__main__':
