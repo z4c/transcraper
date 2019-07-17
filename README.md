@@ -15,4 +15,8 @@ pip install requests lxml python-dateutil
 ```
 
 ## Usage 
-??
+Run it 
+```bash
+python ./main.py
+```
+
