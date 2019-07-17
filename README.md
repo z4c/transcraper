@@ -14,9 +14,14 @@ Install required packages
 pip install requests lxml python-dateutil click
 ```
 
-## Usage 
+## Usage
 Run it 
 ```bash
 python ./main.py --frm AIRPORT_CODE --to AIRPORT_CODE
+```
+It should print
+```
+From ORY: 2019-08-22 (58 €), 2019-08-25 (78 €)
+To AMS 2019-08-22 (58 €), 2019-08-25 (78 €)
 ```
 

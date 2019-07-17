@@ -175,7 +175,7 @@ def scrape(frm, to):
 
     print(
         "From %s:" % frm,
-        ",".join([
+        ", ".join([
             "%s (%s)" % (
                 d.date(),
                 p
