@@ -3,6 +3,11 @@ Transavia Scraper
 
 
 ## Install
+Clone the repo
+```bash
+git clone https://github.com/z4c/transcraper.git 
+cd transcraper
+```
 
 Create a new python's virtual env
 ```bash
@@ -17,9 +22,10 @@ pip install requests lxml python-dateutil click
 ## Usage
 Run it 
 ```bash
-python ./main.py --frm AIRPORT_CODE --to AIRPORT_CODE
+python3 ./main.py --help
 ```
-It should print
+
+Without any args it should print
 ```
 From ORY: 2019-08-22 (58 €), 2019-08-25 (78 €)
 To AMS 2019-08-22 (58 €), 2019-08-25 (78 €)
