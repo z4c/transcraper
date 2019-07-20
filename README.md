@@ -16,7 +16,7 @@ python3 -mvenv . && source bin/activate
 
 Install required packages
 ```bash
-pip install requests lxml python-dateutil click
+pip install requests lxml python-dateutil click logzero
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ Run it
 python3 ./main.py --help
 ```
 
-Without any args it should print
+Without any args it should print something like
 ```
 From ORY: 2019-08-22 (58 €), 2019-08-25 (78 €)
 To AMS 2019-08-22 (58 €), 2019-08-25 (78 €)

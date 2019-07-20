@@ -145,7 +145,7 @@ def scrape(
 
     logger.debug("Validating arguments.")
     if fromdays > todays:
-        raise Exception("fromdays > todays.")
+        logger.exception("'fromdays' should not be less than 'todays'.")
 
     from_date = (datetime.now() + timedelta(days=fromdays)).date()
     to_date = (datetime.now() + timedelta(days=todays)).date()
@@ -153,6 +153,7 @@ def scrape(
     logger.debug("Hacking a session through distil network.")
     session = get_session()
 
+    logger.debug("Retrieving required infos from transavia's api.")
     response = session.post(
         base_url + "/fr-FR/reservez-un-vol/vols/multidayavailability/",
         headers={
@@ -198,7 +199,8 @@ def scrape(
     in_availabilities = [
         (
             dt_parser.parse(div.attrib['data-date']),
-            div.find('.//span[@class="price"]').text_content().strip().split("\n")[1].strip()
+            div.find('.//span[@class="price"]').text_content().strip().split(
+                "\n")[1].strip()
         ) for div in inbound.findall(
             ".//ol/li/div[@class='day day-with-availability']"
         )
@@ -207,22 +209,23 @@ def scrape(
     out_availabilities = [
         (
             dt_parser.parse(div.attrib['data-date']),
-            div.find('.//span[@class="price"]').text_content().strip().split("\n")[1].strip()
+            div.find('.//span[@class="price"]').text_content().strip().split(
+                "\n")[1].strip()
         ) for div in inbound.findall(
             ".//ol/li/div[@class='day day-with-availability']"
         )
     ]
 
     print(
-        "From %s:" % frm,
+        "From %s:" % departure,
         ", ".join([
             "%s (%s)" % (
                 d.date(),
                 p
             ) for (d, p) in in_availabilities
         ]),
-        "\nTo %s" % to,
-        ",".join([
+        "\nTo %s" % arrival,
+        ", ".join([
             "%s (%s)" % (
                 d.date(),
                 p
