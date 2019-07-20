@@ -2,7 +2,9 @@ import requests
 import re
 from lxml import html
 from dateutil import parser as dt_parser
+from datetime import datetime, timedelta
 import click
+from logzero import logger
 
 
 base_url = 'https://www.transavia.com'
@@ -108,9 +110,47 @@ def get_session():
 
 
 @click.command()
-@click.option('--frm', default='ORY', help='Departure: airport code')
-@click.option('--to', default='AMS', help='Arrival: airport code')
-def scrape(frm, to):
+@click.option(
+    '-d', '--departure', default='ORY',
+    help='Departure airport code. default ORY ( Paris Orly).'
+)
+@click.option(
+    '-f', '--fromdays', default=15,
+    help='Departure date in days ( now + days ). default 15 days'
+)
+@click.option(
+    '-a', '--arrival', default='AMS',
+    help='Arrival airport code. default AMS ( Amsterdam Schiphol ).'
+)
+@click.option(
+    '-t', '--todays', default=22,
+    help='Arrival date in days ( now + days ). default 22 days'
+)
+@click.option(
+    '-ac', '--adultcount', default=1, help='Adults. default 1.'
+)
+@click.option(
+    '-cc', '--childcount', default=0, help='children. default 0.'
+)
+@click.option(
+    '-ic', '--infantcount', default=0, help='Infants. default 0.'
+)
+def scrape(
+    departure, fromdays, arrival, todays,
+    adultcount, childcount, infantcount
+):
+    """
+        A simple script to scrape Transavia flights
+    """
+
+    logger.debug("Validating arguments.")
+    if fromdays > todays:
+        raise Exception("fromdays > todays.")
+
+    from_date = (datetime.now() + timedelta(days=fromdays)).date()
+    to_date = (datetime.now() + timedelta(days=todays)).date()
+
+    logger.debug("Hacking a session through distil network.")
     session = get_session()
 
     response = session.post(
@@ -131,17 +171,17 @@ def scrape(frm, to):
             'cache-control': 'no-cache',
         },
         data={
-            'selectPassengersCount.AdultCount': '1',
-            'selectPassengersCount.ChildCount': '0',
-            'selectPassengersCount.InfantCount': '0',
-            'routeSelection.DepartureStation': frm,
-            'routeSelection.ArrivalStation': to,
-            'dateSelection.OutboundDate.Day': '18',
-            'dateSelection.OutboundDate.Month': '8',
-            'dateSelection.OutboundDate.Year': '2019',
-            'dateSelection.InboundDate.Day': '25',
-            'dateSelection.InboundDate.Month': '8',
-            'dateSelection.InboundDate.Year': '2019',
+            'selectPassengersCount.AdultCount': adultcount,
+            'selectPassengersCount.ChildCount': childcount,
+            'selectPassengersCount.InfantCount': infantcount,
+            'routeSelection.DepartureStation': departure,
+            'routeSelection.ArrivalStation': arrival,
+            'dateSelection.OutboundDate.Day': to_date.day,
+            'dateSelection.OutboundDate.Month': to_date.month,
+            'dateSelection.OutboundDate.Year': to_date.year,
+            'dateSelection.InboundDate.Day': from_date.day,
+            'dateSelection.InboundDate.Month': from_date.month,
+            'dateSelection.InboundDate.Year': from_date.year,
             'dateSelection.IsReturnFlight': 'true',
             'flyingBlueSearch.FlyingBlueSearch': 'false'
         }
