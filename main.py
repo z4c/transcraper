@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import requests
 import re
 from lxml import html
@@ -116,7 +118,7 @@ def get_session():
 )
 @click.option(
     '-f', '--fromdays', default=15,
-    help='Departure date in days ( now + days ). default 15 days'
+    help='Departure date in days ( now + days ). default 15 days.'
 )
 @click.option(
     '-a', '--arrival', default='AMS',
@@ -124,7 +126,7 @@ def get_session():
 )
 @click.option(
     '-t', '--todays', default=22,
-    help='Arrival date in days ( now + days ). default 22 days'
+    help='Arrival date in days ( now + days ). default 22 days.'
 )
 @click.option(
     '-ac', '--adultcount', default=1, help='Adults. default 1.'
@@ -224,7 +226,7 @@ def scrape(
                 p
             ) for (d, p) in in_availabilities
         ]),
-        "\nTo %s" % arrival,
+        "\nTo %s:" % arrival,
         ", ".join([
             "%s (%s)" % (
                 d.date(),
