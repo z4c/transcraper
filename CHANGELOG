@@ -1,0 +1,12 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+## [Unreleased] to be 0.0.2
+### Added
+- scraping flights times using singledayavailability endpoint
+
+## [0.0.1] - 2019-07-20
+### Added
+- Initial project structure Readme, gitignore, changelog.
+- fake browser's finger printing for distil.
+- parametrized transavia's api (multidayavailability) shell client.
